@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login - IoT Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="centered">
+    <div class="card">
+      <h1>IoT Dashboard</h1>
+      <p class="muted">Acesse seu painel de dispositivos</p>
+
+      <form id="loginForm" class="form">
+        <label for="email">E-mail</label>
+        <input id="email" type="email" placeholder="usuario@iot.com" required />
+
+        <label for="password">Senha</label>
+        <input id="password" type="password" placeholder="********" required />
+
+        <button type="submit" class="btn">Entrar</button>
+      </form>
+
+      <p class="hint">Credenciais de teste: usuario@iot.com / senha123</p>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

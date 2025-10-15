@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard - IoT</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <h2>IoT</h2>
+    <nav>
+      <a href="#" id="nav-home">Visão Geral</a>
+      <a href="#" id="nav-devices">Dispositivos</a>
+      <a href="#" id="nav-logout">Sair</a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <h1 id="page-title">Visão Geral</h1>
+    </header>
+
+    <section class="content" id="content">
+      <div class="card">
+        <h3>Dispositivos conectados</h3>
+        <p id="device-count">Carregando...</p>
+      </div>
+
+      <div class="card">
+        <h3>Últimas leituras</h3>
+        <ul id="readings">
+          <li>Carregando...</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+  <script>
+    // Simular dados IoT (apenas front-end)
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!auth.isLoggedIn()) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // Exibir nome/email no header (opcional)
+      const email = auth.getUserEmail();
+      document.getElementById('page-title').textContent = `Visão Geral — ${email}`;
+
+      // Simular dispositivos e leituras
+      const devices = [
+        { id: 1, name: 'Sensor Sala', status: 'online', temp: 24.3 },
+        { id: 2, name: 'Sensor Cozinha', status: 'online', temp: 26.1 },
+        { id: 3, name: 'Sensor Estoque', status: 'offline', temp: null },
+      ];
+
+      document.getElementById('device-count').textContent =
+        `${devices.length} (online: ${devices.filter(d=>d.status==='online').length})`;
+
+      const readingsEl = document.getElementById('readings');
+      readingsEl.innerHTML = '';
+      devices.forEach(d => {
+        const li = document.createElement('li');
+        li.textContent = `${d.name} — ${d.status}` + (d.temp !== null ? ` — ${d.temp}°C` : '');
+        readingsEl.appendChild(li);
+      });
+
+      document.getElementById('nav-logout').addEventListener('click', (e) => {
+        e.preventDefault();
+        auth.logout();
+        window.location.href = 'index.html';
+      });
+
+      document.getElementById('nav-home').addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('page-title').textContent = `Visão Geral — ${email}`;
+      });
+
+      document.getElementById('nav-devices').addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('page-title').textContent = `Dispositivos — ${email}`;
+      });
+    });
+  </script>
+</body>
+</html>
