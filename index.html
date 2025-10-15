@@ -3,316 +3,827 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>IoT Dashboard Completo</title>
+<title>Dashboard IoT - Vertical Tabs</title>
 
 <!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-  /* Reset básico */
-  *, *::before, *::after { box-sizing: border-box; }
-  body, html {
-    margin: 0; padding: 0; height: 100%;
-    font-family: 'Inter', Arial, sans-serif;
+  /* Reset e base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0; padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: var(--bg);
     color: var(--text);
-    transition: background 0.3s, color 0.3s;
+    transition: background-color 0.3s, color 0.3s;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
+
+  /* Variáveis de tema */
   :root {
-    --bg: #f3f6fb;
-    --card: #fff;
-    --accent: #0b76ff;
-    --muted: #666;
-    --shadow: 0 6px 18px rgba(20,20,30,0.06);
-    --radius: 10px;
-    --text: #111;
-    --danger: #a00;
-    --success: #2d9a2d;
+    --bg: #f5f7fa;
+    --bg-secondary: #ffffff;
+    --primary: #0b76ff;
+    --primary-light: #e0e9ff;
+    --text: #222222;
+    --text-light: #555555;
+    --danger: #e03e3e;
+    --success: #2e7d32;
+    --shadow: rgba(0,0,0,0.1);
   }
   [data-theme="dark"] {
-    --bg: #121217;
-    --card: #1c1c26;
-    --accent: #0b76ff;
-    --muted: #bbb;
-    --text: #eee;
-    --shadow: 0 6px 18px rgba(0,0,0,0.6);
+    --bg: #121212;
+    --bg-secondary: #1e1e1e;
+    --primary: #4dabf7;
+    --primary-light: #264a7f;
+    --text: #e0e0e0;
+    --text-light: #aaaaaa;
+    --danger: #ff6b6b;
+    --success: #81c784;
+    --shadow: rgba(0,0,0,0.8);
   }
 
-  /* Layout */
-  body {
-    display: flex;
-    min-height: 100vh;
-    flex-direction: column;
-  }
-  main {
-    flex: 1;
-    display: flex;
+  /* Container geral */
+  .container {
+    max-width: 960px;
+    margin: 20px auto 40px;
+    background: var(--bg-secondary);
+    box-shadow: 0 6px 15px var(--shadow);
+    border-radius: 12px;
     overflow: hidden;
-  }
-
-  /* Sidebar */
-  .sidebar {
-    width: 220px;
-    background: linear-gradient(180deg,#073b88 0%,#0b76ff 100%);
-    color: white;
     display: flex;
     flex-direction: column;
-    padding: 28px 18px;
-    gap: 18px;
-    transition: transform 0.3s ease;
-  }
-  .sidebar h2 {
-    margin: 0 0 6px;
-    font-weight: 700;
-    font-size: 1.8rem;
-  }
-  .sidebar nav a {
-    color: rgba(255,255,255,0.95);
-    text-decoration: none;
-    padding: 10px 8px;
-    display: block;
-    border-radius: 6px;
-    font-weight: 600;
-    transition: background 0.2s;
-  }
-  .sidebar nav a:hover,
-  .sidebar nav a.active {
-    background: rgba(255,255,255,0.15);
-  }
-  .sidebar .theme-toggle {
-    margin-top: auto;
-    cursor: pointer;
-    user-select: none;
-    font-size: 0.9rem;
-    padding: 8px;
-    background: rgba(255,255,255,0.12);
-    border-radius: 6px;
-    text-align: center;
-  }
-
-  /* Hamburger */
-  .hamburger {
-    display: none;
-    position: fixed;
-    top: 15px;
-    left: 15px;
-    background: var(--accent);
-    color: white;
-    border: none;
-    padding: 10px 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    z-index: 1001;
-  }
-
-  /* Main Content */
-  .main-content {
-    flex: 1;
-    padding: 28px;
-    overflow-y: auto;
-    background: var(--bg);
-  }
-  .topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-  }
-  .topbar h1 {
-    margin: 0;
-    font-weight: 700;
-  }
-  .topbar .user-info {
-    font-size: 1rem;
-    color: var(--muted);
-  }
-
-  /* Cards */
-  .card {
-    background: var(--card);
-    padding: 18px;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    margin-bottom: 24px;
   }
 
   /* Login */
-  #login-page {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: var(--bg);
+  #loginSection {
+    max-width: 400px;
+    margin: 60px auto;
+    background: var(--bg-secondary);
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px var(--shadow);
   }
-  #login-card {
-    background: var(--card);
-    padding: 40px 30px;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    width: 350px;
-  }
-  #login-card h1 {
-    margin-top: 0;
-    margin-bottom: 12px;
-    font-weight: 700;
-    color: var(--accent);
+  #loginSection h2 {
+    margin-bottom: 25px;
+    color: var(--primary);
     text-align: center;
+    font-weight: 700;
   }
-  #login-card form {
-    display: flex;
+  #loginForm label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  #loginForm input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-bottom: 20px;
+    transition: border-color 0.3s;
+    background: var(--bg);
+    color: var(--text);
+  }
+  #loginForm input:focus {
+    border-color: var(--primary);
+    outline: none;
+  }
+  #loginForm button {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary);
+    color: white;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: background-color 0.3s;
+  }
+  #loginForm button:hover {
+    background: #0857cc;
+  }
+  #loginError {
+    color: var(--danger);
+    text-align: center;
+    margin-top: -15px;
+    margin-bottom: 15px;
+    font-weight: 600;
+    display: none;
+  }
+
+  /* Dashboard geral */
+  #dashboardSection {
+    display: none;
     flex-direction: column;
+    height: 100%;
+  }
+
+  /* Header com logout e tema */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--primary);
+    padding: 16px 30px;
+    color: white;
+    font-weight: 700;
+    font-size: 1.3rem;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+    user-select: none;
+  }
+  header .left {
+    display: flex; 
+    align-items: center;
     gap: 15px;
   }
-  #login-card label {
-    font-size: 14px;
-    color: var(--muted);
-  }
-  #login-card input {
-    padding: 12px;
-    font-size: 1rem;
-    border-radius: 8px;
-    border: 1px solid #e3e7ee;
-    outline: none;
-    transition: border-color 0.3s;
-  }
-  #login-card input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 5px var(--accent);
-  }
-  #login-card button {
-    padding: 12px;
-    font-weight: 700;
-    background: var(--accent);
-    color: white;
+  header button {
+    background: var(--primary-light);
     border: none;
-    border-radius: 8px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
     cursor: pointer;
-    transition: opacity 0.3s;
+    color: var(--text);
+    transition: background-color 0.3s;
   }
-  #login-card button:hover {
-    opacity: 0.9;
+  header button:hover {
+    background: white;
   }
-  #login-card .hint {
-    font-size: 13px;
-    color: var(--muted);
-    text-align: center;
-    margin-top: 10px;
+  header .theme-toggle {
+    background: transparent;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 2px solid white;
+    padding: 6px 12px;
+    border-radius: 30px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  header .theme-toggle:hover {
+    background: white;
+    color: var(--primary);
   }
 
-  /* Sensor list */
-  #sensor-list {
+  /* Layout principal das abas (vertical) */
+  .tabs-container {
     display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-  }
-  .sensor-item {
-    background: var(--card);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    flex: 1 1 200px;
-    padding: 14px;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  .sensor-item:hover {
-    background: var(--accent);
-    color: white;
-  }
-  .sensor-item.active {
-    background: var(--accent);
-    color: white;
-  }
-  .sensor-item h3 {
-    margin: 0 0 8px;
-  }
-  .status-dot {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    margin-right: 8px;
-    vertical-align: middle;
-  }
-  .status-online {
-    background: var(--success);
-  }
-  .status-offline {
-    background: var(--danger);
+    flex-direction: column;
+    height: calc(100vh - 80px);
   }
 
-  /* Sensor details */
-  #sensor-details {
-    background: var(--card);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: 20px;
-    margin-top: 20px;
+  /* Lista vertical das abas */
+  .tabs-list {
+    display: flex;
+    flex-direction: column;
+    background: var(--primary-light);
+    border-radius: 0 0 12px 12px;
+    box-shadow: inset 0 -3px 6px rgba(0,0,0,0.1);
   }
 
-  /* Toast notifications */
-  #toast-container {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    max-width: 320px;
-    z-index: 2000;
-  }
-  .toast {
-    background: var(--danger);
-    color: white;
-    padding: 14px 20px;
-    border-radius: 8px;
-    box-shadow: var(--shadow);
-    margin-bottom: 12px;
+  .tabs-list button {
+    padding: 18px 28px;
+    border: none;
+    background: transparent;
     font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--text-light);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    text-align: left;
+    transition:
+      background-color 0.3s,
+      border-color 0.3s,
+      color 0.3s,
+      transform 0.15s;
     display: flex;
     align-items: center;
     gap: 10px;
-    animation: slideIn 0.4s forwards;
   }
-  .toast.success {
-    background: var(--success);
+  .tabs-list button:last-child {
+    border-bottom: none;
   }
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateX(100%);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
+  .tabs-list button:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+    transform: translateX(5px);
+  }
+  .tabs-list button.active {
+    color: var(--primary);
+    border-bottom: 3px solid var(--primary);
+    background: white;
+    box-shadow: 0 4px 10px var(--shadow);
+    cursor: default;
+    transform: none;
   }
 
-  /* Responsive */
-  @media (max-width: 768px) {
-    .sidebar {
-      position: fixed;
-      top: 0; left: 0; bottom: 0;
-      transform: translateX(-100%);
-      z-index: 1000;
+  /* Conteúdo da aba */
+  .tab-content {
+    flex-grow: 1;
+    padding: 28px 36px;
+    background: var(--bg-secondary);
+    box-shadow: 0 6px 15px var(--shadow);
+    border-radius: 0 0 12px 12px;
+    overflow-y: auto;
+    animation: fadeIn 0.4s ease forwards;
+  }
+  .tab-content:not(.active) {
+    display: none;
+  }
+
+  @keyframes fadeIn {
+    from {opacity: 0; transform: translateY(12px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+
+  /* Medidores e controles */
+  .reading {
+    font-size: 3.6rem;
+    font-weight: 700;
+    color: var(--primary);
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .reading .unit {
+    font-size: 1.6rem;
+    color: var(--text-light);
+    font-weight: 600;
+    user-select: none;
+  }
+  .alert {
+    margin-top: 10px;
+    font-weight: 700;
+    color: var(--danger);
+    user-select: none;
+  }
+
+  /* Botões de controle e toggle de unidade */
+  .btn-group {
+    margin-top: 20px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .btn-group button {
+    flex: 1 1 120px;
+    background: var(--primary-light);
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    padding: 10px 16px;
+    font-weight: 700;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    user-select: none;
+  }
+  .btn-group button:hover {
+    background: var(--primary);
+    color: white;
+  }
+  .btn-group button.active {
+    background: var(--primary);
+    color: white;
+    cursor: default;
+  }
+
+  /* Formulário perfil */
+  #profileForm {
+    max-width: 460px;
+  }
+  #profileForm label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  #profileForm input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-bottom: 20px;
+    background: var(--bg);
+    color: var(--text);
+    transition: border-color 0.3s;
+  }
+  #profileForm input:focus {
+    border-color: var(--primary);
+    outline: none;
+  }
+  #profileForm button {
+    background: var(--primary);
+    color: white;
+    font-weight: 700;
+    border: none;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  #profileForm button:hover {
+    background: #0857cc;
+  }
+  #profileMsg {
+    margin-top: -15px;
+    margin-bottom: 10px;
+    font-weight: 700;
+    display: none;
+  }
+  #profileMsg.success {
+    color: var(--success);
+  }
+  #profileMsg.error {
+    color: var(--danger);
+  }
+
+  /* Gráficos */
+  canvas {
+    max-width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px var(--shadow);
+    background: white;
+  }
+
+  /* Scrollbar estilizado para o conteúdo das abas */
+  .tab-content::-webkit-scrollbar {
+    width: 8px;
+  }
+  .tab-content::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+  }
+  .tab-content::-webkit-scrollbar-thumb {
+    background-color: var(--primary-light);
+    border-radius: 6px;
+  }
+
+  /* Responsividade */
+  @media (max-width: 600px) {
+    .container {
+      margin: 12px 10px 30px;
     }
-    .sidebar.open {
-      transform: translateX(0);
-    }
-    .hamburger {
-      display: block;
-    }
-    main {
-      padding-top: 56px;
-      flex-direction: column;
-    }
-    .main-content {
-      padding: 16px;
-      overflow-y: auto;
+    .btn-group button {
+      flex: 1 1 100%;
     }
   }
 </style>
 </head>
-<body data-theme="light">
+<body>
 
-<button class="hamburger" aria-label="Abrir menu">&#9776;</button>
+<!-- Login -->
+<section id="loginSection" aria-label="Área de login">
+  <h2>Login IoT Dashboard</h2>
+  <form id="loginForm" autocomplete="off" aria-describedby="loginError">
+    <label for="emailInput">Email</label>
+    <input id="emailInput" type="email" required placeholder="seu@email.com" />
+    <label for="passwordInput">Senha</label>
+    <input id="passwordInput" type="password" required minlength="4" placeholder="Senha" />
+    <button type="submit">Entrar</button>
+    <div id="loginError" role="alert"></div>
+  </form>
+</section>
 
-<!-- Login Page -->
-<div id="login-page" aria-label="Página de login
+<!-- Dashboard -->
+<section id="dashboardSection" aria-label="Dashboard IoT">
+  <header>
+    <div class="left">IoT Dashboard</div>
+    <div class="right">
+      <button id="logoutBtn" aria-label="Logout">Sair</button>
+      <button class="theme-toggle" aria-label="Alternar tema">Alternar para Tema Escuro</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <nav class="tabs-list" role="tablist" aria-orientation="vertical">
+      <button id="tab-temp-btn" role="tab" aria-selected="true" tabindex="0" class="active" aria-controls="tab-temp">🌡️ Temperatura</button>
+      <button id="tab-hum-btn" role="tab" aria-selected="false" tabindex="-1" aria-controls="tab-hum">💧 Umidade</button>
+      <button id="tab-profile-btn" role="tab" aria-selected="false" tabindex="-1" aria-controls="tab-profile">👤 Perfil</button>
+    </nav>
+
+    <section id="tab-temp" class="tab-content active" role="tabpanel" tabindex="0" aria-labelledby="tab-temp-btn">
+      <div class="reading" aria-live="polite">
+        <span id="tempValue">--</span>
+        <span class="unit" id="tempUnit">°C</span>
+      </div>
+      <div id="tempAlert" class="alert" role="alert" aria-live="assertive"></div>
+
+      <div class="btn-group" role="group" aria-label="Alternar unidade temperatura">
+        <button id="btn-c" class="active" aria-pressed="true">°C</button>
+        <button id="btn-f" aria-pressed="false">°F</button>
+      </div>
+
+      <canvas id="tempChart" aria-label="Gráfico de temperatura" role="img" height="180"></canvas>
+
+      <div class="btn-group" role="group" aria-label="Limpar dados de temperatura">
+        <button id="clearTempDataBtn">Limpar Histórico Temperatura</button>
+        <button id="clearDataBtn">Limpar Todos Dados</button>
+      </div>
+    </section>
+
+    <section id="tab-hum" class="tab-content" role="tabpanel" tabindex="0" aria-labelledby="tab-hum-btn">
+      <div class="reading" aria-live="polite">
+        <span id="humValue">--</span>
+        <span class="unit">%</span>
+      </div>
+
+      <canvas id="humChart" aria-label="Gráfico de umidade" role="img" height="180"></canvas>
+
+      <div class="btn-group" role="group" aria-label="Limpar dados de umidade">
+        <button id="clearHumDataBtn">Limpar Histórico Umidade</button>
+        <button id="clearDataBtnHum">Limpar Todos Dados</button>
+      </div>
+    </section>
+
+    <section id="tab-profile" class="tab-content" role="tabpanel" tabindex="0" aria-labelledby="tab-profile-btn">
+      <h3>Editar Perfil</h3>
+      <form id="profileForm" autocomplete="off" aria-live="polite" aria-relevant="additions removals">
+        <label for="profile-name">Nome</label>
+        <input id="profile-name" type="text" placeholder="Seu nome" />
+
+        <label for="profile-email">Email</label>
+        <input id="profile-email" type="email" placeholder="seu@email.com" />
+
+        <label for="profile-password">Senha (mín. 4 caracteres)</label>
+        <input id="profile-password" type="password" placeholder="Nova senha" minlength="4" />
+
+        <button type="submit">Salvar Perfil</button>
+      </form>
+      <div id="profileMsg"></div>
+    </section>
+  </main>
+</section>
+
+<script>
+(() => {
+  // Elementos
+  const loginSection = document.getElementById("loginSection");
+  const loginForm = document.getElementById("loginForm");
+  const emailInput = document.getElementById("emailInput");
+  const passwordInput = document.getElementById("passwordInput");
+  const loginError = document.getElementById("loginError");
+
+  const dashboardSection = document.getElementById("dashboardSection");
+  const tempValueEl = document.getElementById("tempValue");
+  const tempUnitEl = document.getElementById("tempUnit");
+  const humValueEl = document.getElementById("humValue");
+  const alertEl = document.getElementById("tempAlert");
+
+  const btnC = document.getElementById("btn-c");
+  const btnF = document.getElementById("btn-f");
+
+  const clearTempBtn = document.getElementById("clearTempDataBtn");
+  const clearHumBtn = document.getElementById("clearHumDataBtn");
+  const clearAllBtn = document.getElementById("clearDataBtn");
+  const clearAllBtnHum = document.getElementById("clearDataBtnHum");
+
+  const profileForm = document.getElementById("profileForm");
+  const profileNameInput = document.getElementById("profile-name");
+  const profileEmailInput = document.getElementById("profile-email");
+  const profilePasswordInput = document.getElementById("profile-password");
+  const profileMsg = document.getElementById("profileMsg");
+
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  const themeToggleBtn = document.querySelector(".theme-toggle");
+
+  // Tabs
+  const tabs = {
+    temp: {
+      btn: document.getElementById("tab-temp-btn"),
+      content: document.getElementById("tab-temp")
+    },
+    hum: {
+      btn: document.getElementById("tab-hum-btn"),
+      content: document.getElementById("tab-hum")
+    },
+    profile: {
+      btn: document.getElementById("tab-profile-btn"),
+      content: document.getElementById("tab-profile")
+    }
+  };
+
+  // Usuário teste
+  const TEST_EMAIL = "teste@exemplo.com";
+  const TEST_PASSWORD = "123456";
+
+  // Estado
+  let loggedIn = false;
+  let tempData = [];
+  let humData = [];
+  let tempUnit = "C";
+
+  // Gráficos
+  let tempChart = null;
+  let humChart = null;
+
+  // Função util para salvar dados no localStorage
+  function saveData() {
+    localStorage.setItem("iot_tempData", JSON.stringify(tempData));
+    localStorage.setItem("iot_humData", JSON.stringify(humData));
+    localStorage.setItem("iot_tempUnit", tempUnit);
+  }
+
+  // Função para carregar dados do localStorage
+  function loadData() {
+    const savedTemp = localStorage.getItem("iot_tempData");
+    if (savedTemp) tempData = JSON.parse(savedTemp);
+    const savedHum = localStorage.getItem("iot_humData");
+    if (savedHum) humData = JSON.parse(savedHum);
+    const savedUnit = localStorage.getItem("iot_tempUnit");
+    if (savedUnit) tempUnit = savedUnit;
+  }
+
+  // Atualiza leitura e alerta da temperatura
+  function updateTempDisplay() {
+    if (tempData.length === 0) {
+      tempValueEl.textContent = "--";
+      alertEl.textContent = "";
+      return;
+    }
+    const lastTempC = tempData[tempData.length - 1];
+    let displayTemp = lastTempC;
+    if (tempUnit === "F") {
+      displayTemp = (lastTempC * 9 / 5) + 32;
+    }
+    tempValueEl.textContent = displayTemp.toFixed(1);
+    tempUnitEl.textContent = `°${tempUnit}`;
+    // Alerta
+    if (lastTempC > 30) {
+      alertEl.textContent = "⚠️ Temperatura alta!";
+    } else {
+      alertEl.textContent = "";
+    }
+  }
+
+  // Atualiza leitura da umidade
+  function updateHumDisplay() {
+    if (humData.length === 0) {
+      humValueEl.textContent = "--";
+      return;
+    }
+    const lastHum = humData[humData.length - 1];
+    humValueEl.textContent = lastHum.toFixed(1);
+  }
+
+  // Função para criar gráfico de temperatura
+  function createTempChart() {
+    const ctx = document.getElementById("tempChart").getContext("2d");
+    if (tempChart) tempChart.destroy();
+
+    tempChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: tempData.map((_, i) => `Leitura ${i + 1}`),
+        datasets: [{
+          label: `Temperatura (°${tempUnit})`,
+          data: tempData.map(c => tempUnit === "C" ? c : (c * 9 / 5) + 32),
+          borderColor: "var(--primary)",
+          backgroundColor: "var(--primary-light)",
+          fill: true,
+          tension: 0.3,
+          pointRadius: 4,
+          pointHoverRadius: 7
+        }]
+      },
+      options: {
+        responsive: true,
+        animation: {duration: 500},
+        scales: {
+          y: {
+            beginAtZero: true,
+            suggestedMax: tempUnit === "C" ? 50 : 120
+          }
+        }
+      }
+    });
+  }
+
+  // Função para criar gráfico de umidade
+  function createHumChart() {
+    const ctx = document.getElementById("humChart").getContext("2d");
+    if (humChart) humChart.destroy();
+
+    humChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: humData.map((_, i) => `Leitura ${i + 1}`),
+        datasets: [{
+          label: "Umidade (%)",
+          data: humData,
+          borderColor: "#3399ff",
+          backgroundColor: "rgba(51, 153, 255, 0.2)",
+          fill: true,
+          tension: 0.3,
+          pointRadius: 4,
+          pointHoverRadius: 7
+        }]
+      },
+      options: {
+        responsive: true,
+        animation: {duration: 500},
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100
+          }
+        }
+      }
+    });
+  }
+
+  // Simula recebimento de dados (todo: substituir por dados reais)
+  function simulateData() {
+    // Temperatura entre 18 e 40 ºC
+    const newTemp = +(18 + Math.random() * 22).toFixed(1);
+    // Umidade entre 20 e 90%
+    const newHum = +(20 + Math.random() * 70).toFixed(1);
+    tempData.push(newTemp);
+    humData.push(newHum);
+    if (tempData.length > 20) tempData.shift();
+    if (humData.length > 20) humData.shift();
+    saveData();
+    updateTempDisplay();
+    updateHumDisplay();
+    createTempChart();
+    createHumChart();
+  }
+
+  // Controle de abas
+  function activateTab(tabKey) {
+    for (const key in tabs) {
+      const isActive = key === tabKey;
+      tabs[key].btn.classList.toggle("active", isActive);
+      tabs[key].btn.setAttribute("aria-selected", isActive);
+      tabs[key].btn.tabIndex = isActive ? 0 : -1;
+      tabs[key].content.classList.toggle("active", isActive);
+    }
+  }
+
+  // Toggle unidades temperatura
+  function setTempUnit(unit) {
+    if (unit === tempUnit) return;
+    tempUnit = unit;
+    btnC.classList.toggle("active", unit === "C");
+    btnC.setAttribute("aria-pressed", unit === "C");
+    btnF.classList.toggle("active", unit === "F");
+    btnF.setAttribute("aria-pressed", unit === "F");
+    saveData();
+    updateTempDisplay();
+    createTempChart();
+  }
+
+  // Login
+  loginForm.addEventListener("submit", e => {
+    e.preventDefault();
+    loginError.style.display = "none";
+
+    const email = emailInput.value.trim().toLowerCase();
+    const password = passwordInput.value;
+
+    // Checagem simples
+    if (email === TEST_EMAIL && password === TEST_PASSWORD) {
+      loggedIn = true;
+      loginSection.style.display = "none";
+      dashboardSection.style.display = "flex";
+
+      // Carrega dados do localStorage
+      loadData();
+      updateTempDisplay();
+      updateHumDisplay();
+      createTempChart();
+      createHumChart();
+
+      // Preenche perfil
+      profileNameInput.value = "Usuário Teste";
+      profileEmailInput.value = TEST_EMAIL;
+      profilePasswordInput.value = "";
+
+      // Inicializa abas
+      activateTab("temp");
+    } else {
+      loginError.textContent = "Email ou senha inválidos.";
+      loginError.style.display = "block";
+    }
+  });
+
+  // Logout
+  logoutBtn.addEventListener("click", () => {
+    loggedIn = false;
+    loginSection.style.display = "block";
+    dashboardSection.style.display = "none";
+    loginForm.reset();
+  });
+
+  // Tabs click
+  Object.entries(tabs).forEach(([key, tab]) => {
+    tab.btn.addEventListener("click", () => activateTab(key));
+  });
+
+  // Alternar unidade temperatura
+  btnC.addEventListener("click", () => setTempUnit("C"));
+  btnF.addEventListener("click", () => setTempUnit("F"));
+
+  // Limpar histórico temperatura
+  clearTempBtn.addEventListener("click", () => {
+    tempData = [];
+    saveData();
+    updateTempDisplay();
+    createTempChart();
+  });
+
+  // Limpar histórico umidade
+  clearHumBtn.addEventListener("click", () => {
+    humData = [];
+    saveData();
+    updateHumDisplay();
+    createHumChart();
+  });
+
+  // Limpar todos os dados
+  clearAllBtn.addEventListener("click", () => {
+    tempData = [];
+    humData = [];
+    saveData();
+    updateTempDisplay();
+    updateHumDisplay();
+    createTempChart();
+    createHumChart();
+  });
+  clearAllBtnHum.addEventListener("click", () => {
+    tempData = [];
+    humData = [];
+    saveData();
+    updateTempDisplay();
+    updateHumDisplay();
+    createTempChart();
+    createHumChart();
+  });
+
+  // Salvar perfil (simples)
+  profileForm.addEventListener("submit", e => {
+    e.preventDefault();
+    const name = profileNameInput.value.trim();
+    const email = profileEmailInput.value.trim();
+    const password = profilePasswordInput.value;
+
+    if (email === "" || !email.includes("@")) {
+      profileMsg.textContent = "Email inválido.";
+      profileMsg.className = "error";
+      profileMsg.style.display = "block";
+      return;
+    }
+    if (password !== "" && password.length < 4) {
+      profileMsg.textContent = "Senha muito curta.";
+      profileMsg.className = "error";
+      profileMsg.style.display = "block";
+      return;
+    }
+
+    // Salvar "perfil" no localStorage (fake)
+    localStorage.setItem("iot_profile", JSON.stringify({name, email}));
+    profileMsg.textContent = "Perfil salvo com sucesso!";
+    profileMsg.className = "success";
+    profileMsg.style.display = "block";
+
+    setTimeout(() => {
+      profileMsg.style.display = "none";
+    }, 3500);
+  });
+
+  // Tema claro/escuro
+  function updateThemeButtonText() {
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    themeToggleBtn.textContent = isDark ? "Alternar para Tema Claro" : "Alternar para Tema Escuro";
+  }
+  themeToggleBtn.addEventListener("click", () => {
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    if (isDark) {
+      document.documentElement.removeAttribute("data-theme");
+    } else {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+    updateThemeButtonText();
+  });
+  updateThemeButtonText();
+
+  // Simulação de dados a cada 5 segundos
+  setInterval(() => {
+    if (loggedIn) simulateData();
+  }, 5000);
+
+  // Inicializa leitura e gráficos antes do login (vazio)
+  updateTempDisplay();
+  updateHumDisplay();
+
+})();
+</script>
+</body>
+</html>
