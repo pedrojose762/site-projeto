@@ -28,44 +28,64 @@
       </div>
 
       <div class="card">
-        <h3>Últimas leituras</h3>
-        <ul id="readings">
-          <li>Carregando...</li>
-        </ul>
+        <h3>Temperatura</h3>
+        <p id="temperature">Carregando...</p>
+      </div>
+
+      <div class="card">
+        <h3>Umidade</h3>
+        <p id="humidity">Carregando...</p>
+      </div>
+
+      <div class="card" id="alert" style="display:none; background:#ffdddd; color:#a00;">
+        <strong>⚠️ Alerta:</strong> Temperatura acima do limite seguro (40°C)!
       </div>
     </section>
   </main>
 
   <script src="app.js"></script>
   <script>
-    // Simular dados IoT (apenas front-end)
     document.addEventListener('DOMContentLoaded', () => {
       if (!auth.isLoggedIn()) {
         window.location.href = 'index.html';
         return;
       }
 
-      // Exibir nome/email no header (opcional)
       const email = auth.getUserEmail();
       document.getElementById('page-title').textContent = `Visão Geral — ${email}`;
 
-      // Simular dispositivos e leituras
-      const devices = [
-        { id: 1, name: 'Sensor Sala', status: 'online', temp: 24.3 },
-        { id: 2, name: 'Sensor Cozinha', status: 'online', temp: 26.1 },
-        { id: 3, name: 'Sensor Estoque', status: 'offline', temp: null },
-      ];
+      // Simulação dos dados de sensor
+      // Temperatura e umidade podem mudar com o tempo
+      function getRandomTemperature() {
+        // simula temperatura entre 25 e 45 graus
+        return (25 + Math.random() * 20).toFixed(1);
+      }
+      function getRandomHumidity() {
+        // simula umidade entre 30 e 80%
+        return (30 + Math.random() * 50).toFixed(1);
+      }
 
-      document.getElementById('device-count').textContent =
-        `${devices.length} (online: ${devices.filter(d=>d.status==='online').length})`;
+      const temperatureEl = document.getElementById('temperature');
+      const humidityEl = document.getElementById('humidity');
+      const alertEl = document.getElementById('alert');
 
-      const readingsEl = document.getElementById('readings');
-      readingsEl.innerHTML = '';
-      devices.forEach(d => {
-        const li = document.createElement('li');
-        li.textContent = `${d.name} — ${d.status}` + (d.temp !== null ? ` — ${d.temp}°C` : '');
-        readingsEl.appendChild(li);
-      });
+      function updateSensorData() {
+        const temp = parseFloat(getRandomTemperature());
+        const hum = parseFloat(getRandomHumidity());
+
+        temperatureEl.textContent = `${temp} °C`;
+        humidityEl.textContent = `${hum} %`;
+
+        if(temp > 40){
+          alertEl.style.display = 'block';
+        } else {
+          alertEl.style.display = 'none';
+        }
+      }
+
+      // Atualiza a cada 5 segundos
+      updateSensorData();
+      setInterval(updateSensorData, 5000);
 
       document.getElementById('nav-logout').addEventListener('click', (e) => {
         e.preventDefault();

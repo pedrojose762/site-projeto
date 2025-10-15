@@ -1,31 +1,318 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Login - IoT Dashboard</title>
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>IoT Dashboard Completo</title>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+  /* Reset básico */
+  *, *::before, *::after { box-sizing: border-box; }
+  body, html {
+    margin: 0; padding: 0; height: 100%;
+    font-family: 'Inter', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    transition: background 0.3s, color 0.3s;
+  }
+  :root {
+    --bg: #f3f6fb;
+    --card: #fff;
+    --accent: #0b76ff;
+    --muted: #666;
+    --shadow: 0 6px 18px rgba(20,20,30,0.06);
+    --radius: 10px;
+    --text: #111;
+    --danger: #a00;
+    --success: #2d9a2d;
+  }
+  [data-theme="dark"] {
+    --bg: #121217;
+    --card: #1c1c26;
+    --accent: #0b76ff;
+    --muted: #bbb;
+    --text: #eee;
+    --shadow: 0 6px 18px rgba(0,0,0,0.6);
+  }
+
+  /* Layout */
+  body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+  main {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 220px;
+    background: linear-gradient(180deg,#073b88 0%,#0b76ff 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 28px 18px;
+    gap: 18px;
+    transition: transform 0.3s ease;
+  }
+  .sidebar h2 {
+    margin: 0 0 6px;
+    font-weight: 700;
+    font-size: 1.8rem;
+  }
+  .sidebar nav a {
+    color: rgba(255,255,255,0.95);
+    text-decoration: none;
+    padding: 10px 8px;
+    display: block;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+  .sidebar nav a:hover,
+  .sidebar nav a.active {
+    background: rgba(255,255,255,0.15);
+  }
+  .sidebar .theme-toggle {
+    margin-top: auto;
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.9rem;
+    padding: 8px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 6px;
+    text-align: center;
+  }
+
+  /* Hamburger */
+  .hamburger {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    z-index: 1001;
+  }
+
+  /* Main Content */
+  .main-content {
+    flex: 1;
+    padding: 28px;
+    overflow-y: auto;
+    background: var(--bg);
+  }
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .topbar h1 {
+    margin: 0;
+    font-weight: 700;
+  }
+  .topbar .user-info {
+    font-size: 1rem;
+    color: var(--muted);
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    padding: 18px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 24px;
+  }
+
+  /* Login */
+  #login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: var(--bg);
+  }
+  #login-card {
+    background: var(--card);
+    padding: 40px 30px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    width: 350px;
+  }
+  #login-card h1 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-align: center;
+  }
+  #login-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  #login-card label {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  #login-card input {
+    padding: 12px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #e3e7ee;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  #login-card input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 5px var(--accent);
+  }
+  #login-card button {
+    padding: 12px;
+    font-weight: 700;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: opacity 0.3s;
+  }
+  #login-card button:hover {
+    opacity: 0.9;
+  }
+  #login-card .hint {
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  /* Sensor list */
+  #sensor-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .sensor-item {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    flex: 1 1 200px;
+    padding: 14px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .sensor-item:hover {
+    background: var(--accent);
+    color: white;
+  }
+  .sensor-item.active {
+    background: var(--accent);
+    color: white;
+  }
+  .sensor-item h3 {
+    margin: 0 0 8px;
+  }
+  .status-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  .status-online {
+    background: var(--success);
+  }
+  .status-offline {
+    background: var(--danger);
+  }
+
+  /* Sensor details */
+  #sensor-details {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-top: 20px;
+  }
+
+  /* Toast notifications */
+  #toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    max-width: 320px;
+    z-index: 2000;
+  }
+  .toast {
+    background: var(--danger);
+    color: white;
+    padding: 14px 20px;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    margin-bottom: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideIn 0.4s forwards;
+  }
+  .toast.success {
+    background: var(--success);
+  }
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      transform: translateX(-100%);
+      z-index: 1000;
+    }
+    .sidebar.open {
+      transform: translateX(0);
+    }
+    .hamburger {
+      display: block;
+    }
+    main {
+      padding-top: 56px;
+      flex-direction: column;
+    }
+    .main-content {
+      padding: 16px;
+      overflow-y: auto;
+    }
+  }
+</style>
 </head>
-<body>
-  <main class="centered">
-    <div class="card">
-      <h1>IoT Dashboard</h1>
-      <p class="muted">Acesse seu painel de dispositivos</p>
+<body data-theme="light">
 
-      <form id="loginForm" class="form">
-        <label for="email">E-mail</label>
-        <input id="email" type="email" placeholder="usuario@iot.com" required />
+<button class="hamburger" aria-label="Abrir menu">&#9776;</button>
 
-        <label for="password">Senha</label>
-        <input id="password" type="password" placeholder="********" required />
-
-        <button type="submit" class="btn">Entrar</button>
-      </form>
-
-      <p class="hint">Credenciais de teste: usuario@iot.com / senha123</p>
-    </div>
-  </main>
-
-  <script src="app.js"></script>
-</body>
-</html>
+<!-- Login Page -->
+<div id="login-page" aria-label="Página de login
